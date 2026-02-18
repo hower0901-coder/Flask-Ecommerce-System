@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">🛒 我的购物车</h4>
+    </div>
+    <div class="card-body">
+        {% if cart_items %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>商品信息</th>
+                            <th>价格</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ url_for('static', filename='product_pics/' + item.product.image_file) }}" alt="" style="width: 60px; height: 60px; object-fit: cover;" class="rounded me-3">
+                                    <div>
+                                        <a href="{{ url_for('product', product_id=item.product.id) }}" class="text-decoration-none text-dark fw-bold">{{ item.product.name }}</a>
+                                        <div class="text-muted small">卖家: {{ item.product.owner.username }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-danger fw-bold">¥ {{ item.product.price }}</td>
+                            <td>
+                                <a href="{{ url_for('remove_from_cart', item_id=item.id) }}" class="btn btn-outline-danger btn-sm">
+                                    🗑️ 移除
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">← 继续购物</a>
+                <div class="d-flex align-items-center">
+                    <h4 class="me-4 mb-0">总计: <span class="text-danger">¥ {{ total }}</span></h4>
+                    <a href="{{ url_for('checkout') }}" class="btn btn-success btn-lg shadow" onclick="return confirm('确定要支付 ¥{{ total }} 吗？')">
+                        立即结算 💳
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <div style="font-size: 4em;">🛒</div>
+                <h3 class="text-muted mt-3">购物车空空如也</h3>
+                <p>快去挑选喜欢的商品吧！</p>
+                <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">去逛逛</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

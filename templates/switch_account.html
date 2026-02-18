@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h4>🔁 选择要登录的账号</h4>
+            </div>
+            <div class="card-body">
+                <div id="accountList" class="list-group list-group-flush">
+                    </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <a href="{{ url_for('logout', next='login') }}" class="btn btn-outline-secondary">
+                        ➕ 添加/登录新账号
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let savedUsers = JSON.parse(localStorage.getItem('campus_users') || '[]');
+    let listContainer = document.getElementById('accountList');
+
+    if (savedUsers.length === 0) {
+        listContainer.innerHTML = '<p class="text-center text-muted my-3">暂无登录记录，请先登录一个账号。</p>';
+    } else {
+        savedUsers.forEach(user => {
+            let item = document.createElement('a');
+            item.href = "/direct_login/" + user.id; 
+            item.className = "list-group-item list-group-item-action d-flex align-items-center py-3";
+            item.innerHTML = `
+                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5em;">
+                    👤
+                </div>
+                <div>
+                    <h5 class="mb-0">${user.username}</h5>
+                    <small class="text-muted">${user.email}</small>
+                </div>
+                <span class="ms-auto text-primary">点击登录 ></span>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+</script>
+{% endblock %}

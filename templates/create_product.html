@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">发布闲置物品</h4>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.price.label(class="form-label") }}
+                <div class="input-group">
+                    <span class="input-group-text">¥</span>
+                    {{ form.price(class="form-control") }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form.image.label(class="form-label") }}
+                {{ form.image(class="form-control") }}
+                <small class="text-muted">支持 jpg, png 格式</small>
+            </div>
+
+            <div class="mb-3">
+                {{ form.description.label(class="form-label") }}
+                {{ form.description(class="form-control", rows="5") }}
+            </div>
+
+            <div class="d-grid gap-2">
+                {{ form.submit(class="btn btn-success btn-lg") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

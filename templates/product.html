@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <img src="{{ url_for('static', filename='product_pics/' + product.image_file) }}" class="img-fluid rounded-start" alt="{{ product.name }}">
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex flex-column">
+                <h2 class="card-title">{{ product.name }}</h2>
+                <h3 class="text-danger my-3 display-6">¥ {{ product.price }}</h3>
+                <p class="text-muted">卖家：{{ product.owner.username }}</p>
+                <p class="text-muted">发布于：{{ product.date_posted.strftime('%Y-%m-%d') }}</p>
+                <hr>
+                <p class="card-text flex-grow-1">{{ product.description }}</p>
+                
+                {% if current_user.is_authenticated and current_user != product.owner %}
+                    <div class="d-grid gap-2 d-md-block mt-4">
+                        <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-outline-primary btn-lg px-4">
+                            🛒 加入购物车
+                        </a>
+                        <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-danger btn-lg px-5">
+                            ⚡ 立即购买
+                        </a>
+                    </div>
+                {% endif %}
+
+                {% if product.owner == current_user %}
+                    <button type="button" class="btn btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        下架/删除商品
+                    </button>
+
+                    <div class="modal fade" id="deleteModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">确认删除？</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">确定要删除吗？操作不可恢复。</div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                    <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST">
+                                        <input class="btn btn-danger" type="submit" value="确认删除">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light"><h5>买家留言 ({{ comments|length }})</h5></div>
+            <div class="card-body">
+                {% for comment in comments %}
+                <div class="mb-3 border-bottom pb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ comment.author.username }}</strong>
+                            {% if comment.author == product.owner %}<span class="badge bg-primary">卖家</span>{% endif %}
+                        </div>
+                        <div>
+                            <small class="text-muted me-2">{{ comment.date_posted.strftime('%Y-%m-%d %H:%M') }}</small>
+                            {% if current_user == comment.author %}
+                            <form action="{{ url_for('delete_comment', comment_id=comment.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-sm text-danger border-0" onclick="return confirm('删除此评论？')">删除</button>
+                            </form>
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                            <button class="btn btn-sm btn-light text-primary" onclick="replyTo('{{ comment.author.username }}')">回复</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <p class="mb-1">{{ comment.content }}</p>
+                </div>
+                {% endfor %}
+                {% if current_user.is_authenticated %}
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">{{ form.content(class="form-control", rows="3", id="commentContent", placeholder="留言...") }}</div>
+                    <div class="d-flex justify-content-end">{{ form.submit(class="btn btn-primary") }}</div>
+                </form>
+                {% else %}
+                <div class="text-center"><a href="{{ url_for('login') }}">登录</a> 后评论</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function replyTo(username) { document.getElementById('commentContent').value = "@" + username + " "; document.getElementById('commentContent').focus(); }
+</script>
+{% endblock %}
